@@ -10,12 +10,14 @@
 (define-constant ERR_UNAUTHORIZED (err u105))
 (define-constant ERR_INVALID_METER (err u106))
 (define-constant ERR_INVALID_TARGET (err u107))
+(define-constant STAKING_REWARD_RATE u5)
 
 ;; Data Variables
 (define-data-var total-credits uint u0)
 (define-data-var next-meter-id uint u1)
 (define-data-var next-product-id uint u1)
 (define-data-var reward-rate uint u10)
+(define-data-var next-stake-id uint u1)
 
 ;; Data Maps
 (define-map user-credits principal uint)
@@ -68,6 +70,15 @@
   {
     total-earned: uint,
     last-reward-block: uint
+  }
+)
+
+(define-map user-stakes
+  {user: principal, stake-id: uint}
+  {
+    amount: uint,
+    start-block: uint,
+    duration: uint
   }
 )
 
@@ -253,6 +264,27 @@
   )
 )
 
+(define-public (stake-credits (amount uint) (duration uint))
+  (let ((stake-id (var-get next-stake-id)) (current-credits (default-to u0 (map-get? user-credits tx-sender))))
+    (asserts! (> amount u0) ERR_INVALID_AMOUNT)
+    (asserts! (>= current-credits amount) ERR_INSUFFICIENT_CREDITS)
+    (asserts! (> duration u0) ERR_INVALID_AMOUNT)
+    (map-set user-credits tx-sender (- current-credits amount))
+    (map-set user-stakes {user: tx-sender, stake-id: stake-id} {amount: amount, start-block: stacks-block-height, duration: duration})
+    (var-set next-stake-id (+ stake-id u1))
+    (ok stake-id)
+  )
+)
+
+(define-public (unstake-credits (stake-id uint))
+  (let ((stake (unwrap! (map-get? user-stakes {user: tx-sender, stake-id: stake-id}) ERR_NOT_FOUND)) (amount (get amount stake)) (start-block (get start-block stake)) (duration (get duration stake)) (blocks-passed (- stacks-block-height start-block)) (reward (* amount (* blocks-passed STAKING_REWARD_RATE))) (total-return (+ amount reward)) (current-credits (default-to u0 (map-get? user-credits tx-sender))))
+    (asserts! (>= blocks-passed duration) ERR_INVALID_AMOUNT)
+    (map-set user-credits tx-sender (+ current-credits total-return))
+    (map-delete user-stakes {user: tx-sender, stake-id: stake-id})
+    (ok total-return)
+  )
+)
+
 ;; Read-only Functions
 
 (define-read-only (get-user-credits (user principal))
@@ -293,4 +325,8 @@
 
 (define-read-only (get-contract-owner)
   CONTRACT_OWNER
+)
+
+(define-read-only (get-stake-info (user principal) (stake-id uint))
+  (map-get? user-stakes {user: user, stake-id: stake-id})
 )
