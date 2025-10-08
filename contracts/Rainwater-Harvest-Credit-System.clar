@@ -11,6 +11,7 @@
 (define-constant ERR_INVALID_METER (err u106))
 (define-constant ERR_INVALID_TARGET (err u107))
 (define-constant STAKING_REWARD_RATE u5)
+(define-constant UPGRADE_COST_PER_UNIT u2)
 
 ;; Data Variables
 (define-data-var total-credits uint u0)
@@ -282,6 +283,24 @@
     (map-set user-credits tx-sender (+ current-credits total-return))
     (map-delete user-stakes {user: tx-sender, stake-id: stake-id})
     (ok total-return)
+  )
+)
+
+(define-public (upgrade-meter-target (meter-id uint) (new-target uint))
+  (let (
+    (meter (unwrap! (map-get? rainwater-meters meter-id) ERR_NOT_FOUND))
+    (current-target (get target-storage meter))
+    (owner (get owner meter))
+    (current-credits (default-to u0 (map-get? user-credits tx-sender)))
+    (increase (- new-target current-target))
+    (cost (* increase UPGRADE_COST_PER_UNIT))
+  )
+    (asserts! (is-eq tx-sender owner) ERR_UNAUTHORIZED)
+    (asserts! (> new-target current-target) ERR_INVALID_AMOUNT)
+    (asserts! (>= current-credits cost) ERR_INSUFFICIENT_CREDITS)
+    (map-set user-credits tx-sender (- current-credits cost))
+    (map-set rainwater-meters meter-id (merge meter {target-storage: new-target}))
+    (ok true)
   )
 )
 
