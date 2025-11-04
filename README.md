@@ -10,7 +10,8 @@ The Rainwater Harvest Credit System is a decentralized solution that rewards com
 - 🪙 **Token Rewards**: Earn credits for meeting water storage targets
 - 🛒 **Marketplace**: Redeem credits for farm supplies and subsidies
 - 📊 **Real-time Monitoring**: Track water levels and collection progress
-- 🔒 **Secure Trading**: Safe credit transfers between users
+- 🔄 **Batch Transfers**: Efficiently distribute credits to multiple users simultaneously
+- � **Secure Trading**: Safe credit transfers between users
 
 ## 🛠️ Technical Stack
 
@@ -81,6 +82,7 @@ clarinet console
 - `authorize-operator` - Add IoT operators
 - `revoke-operator` - Remove operators
 - `set-reward-rate` - Adjust credit rewards
+- `emergency-distribute-credits` - Rapidly distribute credits to multiple recipients during emergencies
 
 ### User Functions
 - `register-meter` - Register new rainwater collection meter
@@ -88,6 +90,7 @@ clarinet console
 - `create-marketplace-product` - List items for sale
 - `purchase-product` - Buy items with credits
 - `transfer-credits` - Send credits to other users
+- `batch-transfer-credits` - Send credits to multiple recipients in one transaction
 
 ### View Functions
 - `get-user-credits` - Check credit balance
@@ -135,7 +138,8 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🌟 Future Enhancements
 
-- 📱 Mobile app integration
+- 🚨 Emergency credit distribution capabilities for rapid response scenarios
+- � Mobile app integration
 - 🌐 Web dashboard for monitoring
 - 🤖 Automated IoT device integration
 - 📈 Analytics and reporting features
