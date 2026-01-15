@@ -383,3 +383,13 @@
     )
   )
 )
+
+(define-public (burn-credits (amount uint))
+  (let ((current-credits (default-to u0 (map-get? user-credits tx-sender))))
+    (asserts! (>= current-credits amount) ERR_INSUFFICIENT_CREDITS)
+    (asserts! (> amount u0) ERR_INVALID_AMOUNT)
+    (map-set user-credits tx-sender (- current-credits amount))
+    (var-set total-credits (- (var-get total-credits) amount))
+    (ok true)
+  )
+)

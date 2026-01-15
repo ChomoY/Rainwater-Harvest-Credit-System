@@ -147,4 +147,14 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
+## 🌿 New Feature: Credit Burning Mechanism
+
+Elevate your environmental commitment with the new credit burning functionality! Users can now voluntarily sacrifice their credits to champion sustainability causes, directly reducing the total credit supply and reinforcing our dedication to ecological preservation.
+
+- **Function**: `burn-credits (amount uint)` - Permanently removes the specified credit amount from circulation
+- **Impact**: Creates deflationary pressure and demonstrates user commitment to environmental initiatives
+- **Integration**: Seamlessly works with existing credit balances and total supply tracking
+
+This addition transforms credits from mere tokens into powerful tools for real-world impact, aligning perfectly with our mission of sustainable water management.
+
 **Built with 💚 for sustainable water management**
